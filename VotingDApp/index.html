@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting DApp</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script> <!-- Import web3.js -->
+</head>
+<body>
+    <h1>Voting DApp</h1>
+    <form onsubmit="voteForCandidate(); return false;">
+        <label for="candidate">Enter Candidate Name:</label>
+        <input type="text" id="candidate" name="candidate" required>
+        <button type="submit">Vote</button>
+    </form>
+
+    <script>
+        // Initialize web3 and set the provider to the Ganache instance.
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // If no injected web3 instance is detected, turn to Ganache
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+
+        const contractAddress = 'YOUR_CONTRACT_ADDRESS';
+        const contractABI = ABI_FROM_TRUFFLE;
+
+        const votingContract = new web3.eth.Contract(contractABI, contractAddress);
+
+        async function voteForCandidate() {
+            const candidateName = document.getElementById('candidate').value;
+            const accounts = await web3.eth.getAccounts();
+            await votingContract.methods.voteForCandidate(web3.utils.asciiToHex(candidateName)).send({from: accounts[0]});
+            alert('Vote has been submitted!');
+        }
+    </script>
+</body>
+</html>
